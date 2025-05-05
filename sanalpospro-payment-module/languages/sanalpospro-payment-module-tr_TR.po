@@ -1,0 +1,282 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: SanalPosPRO Payment Gateway\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-26 12:00+0000\n"
+"PO-Revision-Date: 2025-05-02 11:49+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: tr_TR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Domain: sanalpospro-payment-module\n"
+"X-Generator: Poedit 3.5\n"
+
+#: sanalpospro.php:11
+msgid "SanalPosPRO Payment Gateway"
+msgstr "SanalPosPRO Ödeme Yöntemi"
+
+#: sanalpospro.php:110
+msgid "Warning"
+msgstr "Uyarı"
+
+#: sanalpospro.php:123
+msgid "SanalPosPro Payment Gateway Warning"
+msgstr "SanalPosPro Ödeme Yöntemi Uyarısı"
+
+#: sanalpospro.php:123
+msgid "You need to switch to Classic Checkout view!"
+msgstr "Klasik Ödeme Görünümü’ne geçiş yapmanız gerekmektedir!"
+
+#: sanalpospro.php:124
+msgid "How to do it?"
+msgstr "Nasıl yapılır ?"
+
+#: sanalpospro.php:139
+msgid "SanalPosPro Payment Gateway Compatibility Notice"
+msgstr "SanalPosPro Ödeme Yöntemi Uyumluluk Bilgilendirmesi"
+
+#: sanalpospro.php:140
+msgid ""
+"After the WooCommerce infrastructure update, the block-based payment option "
+"view is not currently available in our plugin. This issue is in our planning "
+"and will be completed by our team as soon as possible."
+msgstr ""
+"Woocommerce alt yapısında yapılan güncellemeden sonra blok tabanlı ödeme "
+"seçeneği görünümü seçeneği geldiğinden dolayı eklentimiz üzerinde şuanda bu "
+"seçenek mevcut değildir. Bu konu planlamamızda mevcut olup ekibimiz "
+"tarafından en kısa sürede işlemler tamamlanacaktır."
+
+#: sanalpospro.php:141
+msgid "The classic payment view can be activated with the following steps:"
+msgstr "Klasik ödeme görünümü aşağıdaki işlem adımları ile aktif edilebilir;"
+
+#: sanalpospro.php:143
+msgid "Back up your site just in case."
+msgstr "Her ihtimale karşı sitenizin güncel yedeğini alınız."
+
+#: sanalpospro.php:144
+msgid "Go to WordPress admin panel > Pages > Checkout Page."
+msgstr ""
+"Wordpress admin panel > Pages (Sayfalar) > Checkout Page (Ödeme Sayfası) "
+"alanına giriş yapınız."
+
+#: sanalpospro.php:145
+msgid ""
+"After clicking on Payment options, click on the Block button in the right "
+"menu."
+msgstr ""
+"Payment options (Ödeme seçenekleri) alanına tıkladıktan sonra sağ menüde yer "
+"alan Block (Blok) butonuna tıklayınız."
+
+#: sanalpospro.php:146
+msgid ""
+"Click on the Switch to classic checkout button in this area and save the "
+"changes with the Save button."
+msgstr ""
+"Bu alanda yer alan Switch to classic checkout (Klasik ödeme sayfasına geç) "
+"butonuna tıklayınız ve Save (Kaydet) butonu ile işlemi kaydediniz."
+
+#: sanalpospro.php:148
+msgid ""
+"After these steps, the Classic payment view will be active and you can use "
+"our plugin."
+msgstr ""
+"Bu işlemlerden sonra Klasik ödeme görünümü aktif olacaktır ve eklentimizi "
+"kullanabilirsiniz."
+
+#: sanalpospro.php:166
+#, php-format
+msgid ""
+"SanalPosPRO Payment Gateway requires PHP version %1$s or higher. You are "
+"running version %2$s. Please upgrade PHP and try again."
+msgstr ""
+"SanalPosPRO Ödeme Yöntemi  PHP sürümü %1$s veya daha yüksek gerektirir. "
+"Sürüm %2$s kullanıyorsunuz. Lütfen PHP’yi yükseltin ve tekrar deneyin."
+
+#: sanalpospro.php:170 sanalpospro.php:185 sanalpospro.php:195
+msgid "Plugin Activation Error"
+msgstr "Eklenti Etkinleştirme Hatası"
+
+#: sanalpospro.php:181
+#, php-format
+msgid ""
+"SanalPosPRO Payment Gateway requires WordPress version %1$s or higher. You "
+"are running version %2$s. Please upgrade WordPress and try again."
+msgstr ""
+"SanalPosPRO Ödeme Yöntemi WordPress sürümü %1$s veya daha yüksek bir sürüm "
+"gerektirir. Sürüm %2$s kullanıyorsunuz. Lütfen WordPress’i yükseltin ve "
+"tekrar deneyin."
+
+#: sanalpospro.php:194
+msgid ""
+"SanalPosPRO Payment Gateway requires WooCommerce to be installed and "
+"activated."
+msgstr ""
+"SanalPosPRO Ödeme Yöntemi, WooCommerce'in yüklenmesini ve "
+"etkinleştirilmesini gerektirir."
+
+#: sanalpospro.php:254
+msgid "SanalPosPRO Payment Gateway for WooCommerce plugin"
+msgstr "WooCommerce eklentisi için SanalPosPRO Ödeme Yöntemi"
+
+#: sanalpospro.php:260
+msgid "Pay via Card (SanalPosPRO)"
+msgstr "Kart ile Öde(SanalPosPro)"
+
+#: sanalpospro.php:261
+msgid "Payment by your credit/debit card."
+msgstr "Kredi/banka kartınız ile ödeme yapın."
+
+#: sanalpospro.php:284
+msgid "Enable/Disable"
+msgstr "Aktif/Pasif"
+
+#: sanalpospro.php:286 sanalpospro.php:288
+msgid "Enable/Disable SanalPosPRO payment gateway"
+msgstr "SanalPosPRO ödeme yöntemini etkinleştir/devre dışı bırak"
+
+#: sanalpospro.php:326
+msgid "Click to Access SanalPosPRO Panel"
+msgstr "SanalPosPRO Paneline Erişmek İçin Tıklayınız"
+
+#: sanalpospro.php:363
+msgid "Error Code"
+msgstr "Hata Kodu"
+
+#: sanalpospro.php:418
+msgid "Security check failed. Please try again."
+msgstr "Güvenlik kontrolü başarısız. Lütfen tekrar deneyin."
+
+#: sanalpospro.php:424
+msgid "Invalid order."
+msgstr "Geçersiz sipariş."
+
+#: sanalpospro.php:429
+msgid "You do not have permission to view this order."
+msgstr "Bu siparişi görüntüleme yetkiniz yok."
+
+#: sanalpospro.php:437
+msgid "Invalid payment ID."
+msgstr "Geçersiz ödeme ID’si."
+
+#: sanalpospro.php:453 vendor/Eticsoft/Sanalpospro/InternalApi.php:452
+msgid "Payment failed"
+msgstr "Ödeme başarısız"
+
+#: sanalpospro.php:459 vendor/Eticsoft/Sanalpospro/InternalApi.php:458
+msgid "Processing SanalPosPRO payment"
+msgstr "SanalPosPRO ödemesi işleniyor"
+
+#: sanalpospro.php:463 vendor/Eticsoft/Sanalpospro/InternalApi.php:462
+#, php-format
+msgid "Payment completed successfully via %s."
+msgstr "Ödeme %s üzerinden başarıyla tamamlandı."
+
+#: sanalpospro.php:472 vendor/Eticsoft/Sanalpospro/InternalApi.php:471
+msgid "Commission Fee"
+msgstr "Komisyon Tutarı"
+
+#: sanalpospro.php:498
+msgid "SanalPosPRO Payment Warning"
+msgstr "SanalPosPRO Ödeme Uyarısı"
+
+#: sanalpospro.php:499
+msgid "Payment was processed through SanalPosPRO"
+msgstr "Ödeme SanalPosPRO aracılığıyla işlendi"
+
+#: sanalpospro.php:500
+msgid ""
+"Please check the payment status and verify with your bank/payment "
+"institution."
+msgstr "Lütfen ödeme durumunuzu bankanız/ödeme kuruluşunuzla doğrulayın."
+
+#: sanalpospro.php:569
+msgid "Installment Options"
+msgstr "Taksit Seçenekleri"
+
+#: admin/class-admin.php:64 admin/class-admin.php:71
+msgid "Yes"
+msgstr "Evet"
+
+#: admin/class-admin.php:65 admin/class-admin.php:72
+msgid "No"
+msgstr "Hayır"
+
+#: admin/class-admin.php:78
+msgid "Classic"
+msgstr "Klasik"
+
+#: admin/class-admin.php:79
+msgid "Modern"
+msgstr "Modern"
+
+#: admin/class-admin.php:131
+msgid "SanalPosPRO Settings"
+msgstr "SanalPosPRO Ayarları"
+
+#: admin/class-admin.php:132
+msgid "SanalPosPRO"
+msgstr "SanalPosPRO"
+
+#: templates/installment_theme/classic.php:52
+#: templates/installment_theme/modern.php:93
+msgid "Installment"
+msgstr "Taksit"
+
+#: templates/installment_theme/classic.php:53
+#: templates/installment_theme/modern.php:94
+msgid "Monthly Payment"
+msgstr "Aylık Ödeme"
+
+#: templates/installment_theme/classic.php:54
+#: templates/installment_theme/modern.php:95
+msgid "Total"
+msgstr "Toplam"
+
+#: templates/installment_theme/classic.php:82
+#: templates/installment_theme/modern.php:123
+msgid "Cash"
+msgstr "Peşin"
+
+#: templates/installment_theme/classic.php:85
+#: templates/installment_theme/modern.php:126
+#, php-format
+msgid "%d. Installment"
+msgstr "%d. Taksit"
+
+#: templates/installment_theme/classic.php:100
+#: templates/installment_theme/modern.php:142
+msgid ""
+"* Installment amounts are estimated and may vary according to your bank's "
+"campaigns and interest rates."
+msgstr ""
+"* Taksit tutarları tahmini olup, bankanızın kampanya ve faiz oranlarına göre "
+"değişiklik gösterebilir."
+
+#: templates/checkout/payment-iframe.php:20
+msgid "×"
+msgstr "×"
+
+#: templates/checkout/payment-iframe.php:27
+msgid "Loading payment page..."
+msgstr "Ödeme sayfası yükleniyor…"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:344
+msgid "Discount"
+msgstr "İndirim"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:360
+msgid "Shipping"
+msgstr "Kargo"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:386
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:391
+msgid "Tax"
+msgstr "Vergi"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:472
+msgid "Payment validation failed"
+msgstr "Ödeme doğrulaması başarısız oldu"

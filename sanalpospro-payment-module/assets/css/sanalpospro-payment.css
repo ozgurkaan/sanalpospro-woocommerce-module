@@ -1,0 +1,178 @@
+/**
+ * SanalPosPRO Payment Gateway Styles
+ */
+
+/* Payment Form Styles */
+.sppro-payment-form {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.sppro-payment-description {
+    margin-bottom: 15px;
+}
+
+.sppro-payment-info {
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.sppro-supported-cards {
+    margin-top: 15px;
+}
+
+.sppro-supported-cards .card-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.sppro-supported-cards .card-icon {
+    display: inline-block;
+    height: 30px;
+}
+
+.sppro-supported-cards .card-icon img {
+    height: 100%;
+    width: auto;
+}
+
+/* iFrame Container Styles */
+.sppro-iframe-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sppro-iframe-wrapper {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 80vh;
+    max-height: 700px;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.sppro-iframe-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sppro-header-spacer {
+    flex-grow: 1;
+}
+
+.sppro-close-iframe {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.sppro-close-iframe:hover {
+    color: #dc3545;
+}
+
+.sppro-iframe-content {
+    flex: 1;
+    position: relative;
+}
+
+.sppro-payment-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.sppro-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    z-index: 1;
+}
+
+.sppro-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: sppro-spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes sppro-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Success and Error Messages */
+.sppro-success-message,
+.sppro-error-message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    z-index: 2;
+}
+
+.sppro-success-message {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.sppro-error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .sppro-iframe-wrapper {
+        width: 95%;
+        height: 90vh;
+        max-height: none;
+    }
+} 
