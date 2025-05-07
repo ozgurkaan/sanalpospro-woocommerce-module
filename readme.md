@@ -20,7 +20,7 @@ Eğer WordPress Marketplace üzerinden kurulum yapamıyorsanız, aşağıdaki ma
 
 1. [Releases](https://github.com/eticsoft/SanalPosPRO-woocommerce-module/releases) sayfasına giderek en son sürümü seçin ardından SanalPosPRO.zip adlı dosyayı indirebilirsiniz.
 
-![Woocommerce eklenti indirme](https://cdn.paythor.com/1/103/installation/3.png)
+![Woocommerce eklenti indirme](https://cdn.paythor.com/1/103/installation/3.png) 
 
 2. Woocommerce yönetici panelinize giriş yapın.
 3. Sol menüden **Eklentiler > Yeni eklenti ekle** sekmesine tıklayın.
