@@ -12,19 +12,22 @@ class PaymentModel extends Entity
     private float $buyerFee;
     private string $method;
     private string $merchant_reference;
+    private string $returnUrl;
 
     public function __construct(
         ?float $amount = 0.0,
         ?string $currency = 'TRY',
         ?float $buyerFee = 0.0,
         ?string $method = '',
-        ?string $merchant_reference = ''
+        ?string $merchant_reference = '',
+        ?string $returnUrl = ''
     ) {
         $this->amount = $amount;
         $this->currency = $currency;
         $this->buyerFee = $buyerFee;
         $this->method = $method;
         $this->merchant_reference = $merchant_reference;
+        $this->returnUrl = $returnUrl;
     }
 
     public function getAmount(): float
@@ -76,8 +79,15 @@ class PaymentModel extends Entity
     {
         $this->merchant_reference = $merchantReference;
     }
+    public function getReturnUrl(): string
+    {
+        return $this->returnUrl;
+    }
+    public function setReturnUrl(string $returnUrl): void
+    {
+        $this->returnUrl = $returnUrl;
+    }
     
-
     public function toArray(): array
     {
         return [
@@ -85,7 +95,8 @@ class PaymentModel extends Entity
             'currency' => $this->currency,
             'buyer_fee' => $this->buyerFee,
             'method' => $this->method,
-            'merchant_reference' => $this->merchant_reference
+            'merchant_reference' => $this->merchant_reference,
+            'return_url' => $this->returnUrl
         ];
     }
 }

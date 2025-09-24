@@ -7,7 +7,8 @@ if (!defined('ABSPATH')) exit;
 
 class ApiClient
 {
-    public $baseUrl = 'https://api.paythor.com';
+    //public $baseUrl = 'https://dev-api.paythor.com';
+    public $baseUrl= 'https://live-api.sanalpospro.com';
     public $publicKey = '';
     public $secretKey = '';
     private $hash = '';
@@ -19,7 +20,7 @@ class ApiClient
     public function __construct()
     {
         $settings = [
-            'paythor_api_key' => EticConfig::get('SANALPOSPRO_TOKEN') ?? '',
+            'paythor_access_token' => EticConfig::get('SANALPOSPRO_ACCESS_TOKEN') ?? '',
             'paythor_public_key' => EticConfig::get('SANALPOSPRO_PUBLIC_KEY') ?? '',
             'paythor_secret_key' => EticConfig::get('SANALPOSPRO_SECRET_KEY') ?? '',
         ];

@@ -49,7 +49,8 @@ class SPPRO_Admin {
             'paymentPageTheme' => EticConfig::get('SANALPOSPRO_PAYMENTPAGETHEME') ?: 'classic',
             'installments' => json_decode(EticConfig::get('SANALPOSPRO_INSTALLMENTS'), true) ?: [],
             'public_key' => EticConfig::get('SANALPOSPRO_PUBLIC_KEY'),
-            'secret_key' => EticConfig::get('SANALPOSPRO_SECRET_KEY')
+            'secret_key' => EticConfig::get('SANALPOSPRO_SECRET_KEY'),
+            'access_token' => EticConfig::get('SANALPOSPRO_ACCESS_TOKEN')
         ];
 
         // Add inline script with settings
@@ -87,9 +88,10 @@ class SPPRO_Admin {
         $xfvv = wp_create_nonce('sppro_internal_api_request');
         $iapi_base_url = 'admin-ajax.php?action=sppro_internal_api_request';
 
-        wp_add_inline_script('sppro-admin-settings', 'window.iapi_base_url = "' . esc_js($iapi_base_url) . '";', 'before');
-        wp_add_inline_script('sppro-admin-settings', 'window.iapi_xfvv = "' . esc_js($xfvv) . '";', 'before');
+        wp_add_inline_script('sppro-admin-settings', 'window.target_url = "' . esc_js($iapi_base_url) . '";', 'before');
+        wp_add_inline_script('sppro-admin-settings', 'window.xfvv = "' . esc_js($xfvv) . '";', 'before');
         wp_add_inline_script('sppro-admin-settings', 'window.store_url = "' . esc_js(get_site_url()) . '";', 'before');
+        wp_add_inline_script('sppro-admin-settings', 'window.style_url = "' . esc_js(SPPRO_PLUGIN_URL . 'admin/css/index.css') . '";', 'before');
         // Enqueue Paythor dashboard script
         wp_register_script(
             'paythor-dashboard', 

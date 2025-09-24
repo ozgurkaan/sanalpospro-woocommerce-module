@@ -14,7 +14,7 @@ use Eticsoft\Sanalpospro\EticConfig;
  * Plugin Name: SanalPosPRO Payment Gateway
  * Plugin URI: https://sanalpospro.com
  * Description: SanalPosPRO payment gateway for WooCommerce
- * Version: 0.1.2
+ * Version: 10.0.3
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: EticSoft R&D Lab.
@@ -27,7 +27,7 @@ use Eticsoft\Sanalpospro\EticConfig;
 
 // Define constants
 if (!defined('SPPRO_VERSION')) {
-    define('SPPRO_VERSION', '0.1.2');
+    define('SPPRO_VERSION', '10.0.3');
 }
 if (!defined('SPPRO_PLUGIN_URL')) {
     define('SPPRO_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -349,11 +349,12 @@ function sppro_setup_gateway_class()
             $order = wc_get_order($order_id);
             $pay_for_order = isset($_GET['pay_for_order']) && sanitize_text_field(wp_unslash($_GET['pay_for_order']));
             $xfvv = wp_create_nonce('sppro_internal_api_request');
-
+            $receipt_nonce = wp_create_nonce('sppro_payment_confirmation');
             try {
                 $api = new \Eticsoft\Sanalpospro\InternalApi();
                 $data = [
                     'order_id' => $order_id,
+                    'receipt_nonce' => $receipt_nonce
                 ];
                 $res = ($api->run('CreatePaymentLink', $data))->getResponse();
 
@@ -365,10 +366,6 @@ function sppro_setup_gateway_class()
                         esc_html($res['message'])
                     ));
                 }
-
-                // Create a nonce for the receipt page
-                $receipt_nonce = wp_create_nonce('sppro_payment_confirmation');
-                
                 $order_confirmation_url = add_query_arg(
                     array(
                         'order_id' => $order_id,
@@ -413,29 +410,40 @@ function sppro_setup_gateway_class()
 
         public function receipt_page($order_id)
         {
+         
+          
             // Verify nonce to prevent CSRF attacks
             if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'sppro_payment_confirmation')) {
                 wp_die(esc_html__('Security check failed. Please try again.', 'sanalpospro-payment-module'));
             }
+         
 
             // Verify user has permission to view this order
             $order = wc_get_order(absint($order_id));
             if (!$order) {
                 wp_die(esc_html__('Invalid order.', 'sanalpospro-payment-module'));
             }
+           
 
             // Check if user has permission to view this order
             if (!current_user_can('manage_woocommerce') && $order->get_customer_id() !== get_current_user_id()) {
                 wp_die(esc_html__('You do not have permission to view this order.', 'sanalpospro-payment-module'));
             }
+          
 
             // Sanitize and validate input parameters
             $p_id = isset($_GET['p_id']) ? sanitize_text_field(wp_unslash($_GET['p_id'])) : null;
             $id = empty($id) ? $order_id : $id;
 
+            
+           
+           
+
             if (!$id) {
                 wp_die(esc_html__('Invalid payment ID.', 'sanalpospro-payment-module'));
             }
+
+          
 
             try {
                 $api = new \Eticsoft\Sanalpospro\InternalApi();
@@ -448,6 +456,7 @@ function sppro_setup_gateway_class()
                 $apiReq = $api->getInstance()->run('confirmOrder', $data);
                 $response = $apiReq->getResponse();
 
+                
 
                 if ($response['status'] !== 'success') {
                     $order->update_status('failed', __('Payment failed', 'sanalpospro-payment-module'));
@@ -491,7 +500,42 @@ function sppro_setup_gateway_class()
         /**
          * Show payment warning in admin
          */
-        public function show_payment_warning($order)
+        public function show_payment_warning($order) {
+            // Static flag to prevent duplicate warnings
+            static $warning_shown = [];
+            
+            // Create a unique ID for this order
+            $order_id = $order->get_id();
+            
+            // Check if warning already shown for this order
+            if (isset($warning_shown[$order_id])) {
+                return;
+            }
+            
+            if ($order->get_payment_method() === 'sanalpospro') {
+                // Only show warning for orders with completed payment status
+                $completed_statuses = array(
+                    EticConfig::get('SANALPOSPRO_ORDER_STATUS'),
+                    'completed',
+                    'processing'
+                );
+                
+                $order_status = $order->get_status();
+                
+                if (in_array($order_status, $completed_statuses)) {
+                    echo '<div class="notice notice-warning sppro-warning" style="padding: 10px; margin: 10px 0;">
+                        <h4>' . esc_html__('SanalPosPRO Payment Warning', 'sanalpospro-payment-module') . '</h4>
+                        <p>' . esc_html__('Payment was processed through SanalPosPRO', 'sanalpospro-payment-module') . '</p>
+                        <p>' . esc_html__('Please check the payment status and verify with your bank/payment institution.', 'sanalpospro-payment-module') . '</p>
+                    </div>';
+                    
+                    // Mark this order as having shown the warning
+                    $warning_shown[$order_id] = true;
+                }
+            }
+        }
+
+       /*  public function show_payment_warning($order)
         {
             if ($order->get_payment_method() === 'sanalpospro') {
                 echo '<div class="notice notice-warning sppro-warning" style="padding: 10px; margin: 10px 0;">
@@ -500,7 +544,7 @@ function sppro_setup_gateway_class()
                     <p>' . esc_html__('Please check the payment status and verify with your bank/payment institution.', 'sanalpospro-payment-module') . '</p>
                 </div>';
             }
-        }
+        } */
 
         /**
          * Allow iframe in HTML

@@ -183,12 +183,23 @@ class InternalApi
         }
 
         
+        
         $apiClient = ApiClient::getInstanse();
         $response = $apiClient->post('/check/accesstoken', [
             'accesstoken' => $accessToken
         ]);
 
-        $this->response = $response;
+        // Ensure $this->response is always an array
+        if (is_array($response)) {
+            $this->response = $response;
+            
+            // API'den dönen token_string'i kaydet
+            if (isset($this->response['data']['token_string'])) {
+                EticConfig::set('SANALPOSPRO_ACCESS_TOKEN', $this->response['data']['token_string']);
+            }
+        } else {
+            $this->setResponse('error', 'Invalid response from API', [], ['raw_response' => $response]);
+        }
         return $this;
     }
 
@@ -261,9 +272,14 @@ class InternalApi
    private function actionCreatePaymentLink(): self
     {
         
+        
+        
        
         if (!isset($this->params['order_id']) || empty($this->params['order_id'])) {
             return $this->setResponse('error', 'Order ID is required');
+        }
+        if (!isset($this->params['receipt_nonce']) || empty($this->params['receipt_nonce'])) {
+            return $this->setResponse('error', 'Receipt nonce is required');
         }
 
         $order_id = sanitize_text_field($this->params['order_id']);
@@ -396,7 +412,16 @@ class InternalApi
             );
             $cartModel->addItem($taxItem);
         }
-       
+        $receipt_nonce = $this->params['receipt_nonce'];
+     
+        $order_confirmation_url = add_query_arg(
+            array(
+                'order_id' => $order_id,
+                'key' => $order->get_order_key(),
+                '_wpnonce' => $receipt_nonce
+            ),
+            $order->get_checkout_payment_url(true)
+        );
    
         
         $payment = new PaymentModel();
@@ -405,15 +430,51 @@ class InternalApi
         $payment->setBuyerFee('0');
         $payment->setMethod('creditcard');
         $payment->setMerchantReference($order_id);
+        $payment->setReturnUrl($order_confirmation_url);
         
         $payerAddress = new Address();
-        $payerAddress->setLine1($customer->get_billing_address_1());
-        $payerAddress->setCity($customer->get_billing_city());
-        $payerAddress->setState($customer->get_billing_state());
-        $payerAddress->setPostalCode(empty($customer->get_billing_postcode()) ? '07050' : $customer->get_billing_postcode());
-        $payerAddress->setCountry($customer->get_billing_country());
+        //$payerAddress->setLine1($customer->get_billing_address_1());
+        //$payerAddress->setCity($customer->get_billing_city());
+        //$payerAddress->setState($customer->get_billing_state());
+        //$payerAddress->setPostalCode(empty($customer->get_billing_postcode()) ? '07050' : $customer->get_billing_postcode());
+        //$payerAddress->setCountry($customer->get_billing_country());
+        $payerAddress->setLine1(
+            !empty($customer->get_shipping_address_1()) 
+                ? $customer->get_shipping_address_1()
+                : (!empty($customer->get_billing_address_1()) 
+                    ? $customer->get_billing_address_1() 
+                    : 'testadress')
+        );
+        $payerAddress->setCity(
+            !empty($customer->get_shipping_city())
+                ? $customer->get_shipping_city()
+                : (!empty($customer->get_billing_city())
+                    ? $customer->get_billing_city()
+                    : 'testcity')
+        );
+        $payerAddress->setState(
+            !empty($customer->get_shipping_state())
+                ? $customer->get_shipping_state() 
+                : (!empty($customer->get_billing_state())
+                    ? $customer->get_billing_state()
+                    : 'teststate')
+        );
+        $payerAddress->setPostalCode(
+            !empty($customer->get_shipping_postcode())
+                ? $customer->get_shipping_postcode()
+                : (!empty($customer->get_billing_postcode())
+                    ? $customer->get_billing_postcode()
+                    : '07050')
+        );
+        $payerAddress->setCountry(
+            !empty($customer->get_shipping_country())
+                ? $customer->get_shipping_country()
+                : (!empty($customer->get_billing_country())
+                    ? $customer->get_billing_country()
+                    : 'TR')
+        );
 
-        $shippingPhone = $customer->get_shipping_phone() ?: '5000000000';
+        $shippingPhone = $customer->get_shipping_phone() ?: $customer->get_billing_phone() ?: '5000000000';
         $phone = $customer->get_billing_phone() ?: '5000000000';
    
         $payer = new Payer();
@@ -473,17 +534,20 @@ class InternalApi
                 $order->update_status('failed', __('Payment validation failed', 'sanalpospro-payment-module'));
                 return $this->setResponse('error', 'Payment validation failed');
             }
+            
 
             $transaction = $res['data']['transaction'] ?? [];
             $process = $res['data']['process'] ?? [];
             $result = $res['data']['result'] ?? [];
+ 
+           
 
-            
             if (
                 ($transaction['status'] === 'completed') && 
                 ($process['process_status'] === 'completed') && 
                 ($result['status'] === 'completed')
-            ) {
+            ) 
+            {
                 return $this->setResponse('success', 'Payment validated', [
                     'amount' => $process['amount'] ?? 0,
                     'gateway' => $process['gateway'] ?? ''

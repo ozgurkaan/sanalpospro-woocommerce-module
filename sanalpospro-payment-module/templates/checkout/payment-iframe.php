@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) exit;
  * This template can be overridden by copying it to yourtheme/woocommerce/sanalpospro/checkout/payment-iframe.php.
  *
  * @package SanalPosPRO
- * @version 0.1.2
+ * @version 10.0.3
  */
 ?>
 
@@ -28,6 +28,7 @@ if (!defined('ABSPATH')) exit;
             </div>
             <iframe 
                 src="<?php echo esc_url($payment_link); ?>" 
+                sandbox="allow-scripts allow-top-navigation allow-same-origin allow-forms"
                 class="sppro-payment-iframe" 
                 frameborder="0" 
                 allow="payment" 
