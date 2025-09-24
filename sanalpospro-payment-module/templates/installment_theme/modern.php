@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) exit;
  * This template can be overridden by copying it to yourtheme/woocommerce/sanalpospro/installment_theme/modern.php.
  *
  * @package SanalPosPRO
- * @version 0.1.2
+ * @version 10.0.3
  */
 
 // Enqueue CSS file

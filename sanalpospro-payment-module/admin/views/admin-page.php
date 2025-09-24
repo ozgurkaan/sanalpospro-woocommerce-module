@@ -4,13 +4,14 @@
  *
  * @package SanalPosPRO
  */
+use Eticsoft\Sanalpospro\EticConfig;
 
 defined('ABSPATH') || exit;
 ?>
 <div class="wrap sppro-admin-wrap">
-    <div id="paythor-container"
-         data-token="<?php echo esc_attr($token); ?>"
-         data-platform="wooCommerce"
+    <div id="root"
+         data-token="<?php echo esc_attr(EticConfig::get('SANALPOSPRO_ACCESS_TOKEN')); ?>"
+         data-platform="woocommerce"
          data-website="<?php echo esc_url($site_url); ?>"
          data-app-id="103"
          data-program-id="1">

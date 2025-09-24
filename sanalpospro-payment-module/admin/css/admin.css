@@ -11,6 +11,10 @@
     display: none !important; 
 }
 
+#root {
+    margin-left: -20px !important;
+}
+
 * { 
     --paythor-content-height: calc(100vh - 32px)!important; 
 } 

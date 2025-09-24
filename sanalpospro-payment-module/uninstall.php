@@ -22,6 +22,7 @@ delete_option('SPPRO_CURRENCY_CONVERT');
 delete_option('SPPRO_SHOWINSTALLMENTSTABS');
 delete_option('SPPRO_PAYMENTPAGETHEME');
 delete_option('SPPRO_INSTALLMENTS');
+delete_option('SANALPOSPRO_ACCESS_TOKEN');
 
 // Delete WooCommerce specific options
 delete_option('woocommerce_sanalpospro_settings');
