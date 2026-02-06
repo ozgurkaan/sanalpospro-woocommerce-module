@@ -8,7 +8,7 @@ if (!defined('ABSPATH')) exit;
  * This template can be overridden by copying it to yourtheme/woocommerce/sanalpospro/checkout/payment-form.php.
  *
  * @package SanalPosPRO
- * @version 10.0.3
+ * @version 10.0.4
  */
 ?>
 
