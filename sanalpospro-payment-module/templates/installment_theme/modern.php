@@ -105,11 +105,11 @@ $all_card_families = [
                                 foreach($card_installments as $installment) {
                                     if($installment['months'] == $i) {
                                         $installment_exists = true;
-                                        if($i == 1 && $installment['gateway_fee_percent'] == 0) {
+                                        if($i == 1 && $installment['buyer_fee_percent'] == 0) {
                                             $total = $price;
                                             $monthly = $total;
                                         } else {
-                                            $total = ($price * 100) / (100 - $installment['gateway_fee_percent']);
+                                            $total = ($price * 100) / (100 - $installment['buyer_fee_percent']);
                                             $monthly = $total/$i;
                                         }
                                         $monthly_payment = wp_kses_post(wc_price($monthly));

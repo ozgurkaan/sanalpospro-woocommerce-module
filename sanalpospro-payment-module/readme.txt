@@ -2,7 +2,7 @@
 Contributors: eticsoftas
 Tags: sanal pos, ücretsiz, pos, woocommerce, ödeme
 Requires at least: 5.8
-Tested up to: 6.8
+Tested up to: 6.9
 Stable tag: 10.0.4
 Requires PHP: 7.4
 License: GPL-2.0-or-later
