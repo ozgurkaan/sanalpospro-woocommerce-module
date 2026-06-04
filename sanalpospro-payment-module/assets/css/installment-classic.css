@@ -90,7 +90,6 @@
     margin: 0 auto !important;
 }
 
-/* Başlık sütunları için genişlik ayarları */
 [data-sanalpospro-card] table th:first-child,
 [data-sanalpospro-card] table th:nth-child(2),
 [data-sanalpospro-card] table th:nth-child(3) {
@@ -104,7 +103,6 @@
     text-align: center !important;
 }
 
-/* Rakam sütunları için özel stil */
 [data-sanalpospro-card] table td:nth-child(2),
 [data-sanalpospro-card] table td:nth-child(3) {
     text-align: center !important;
@@ -165,7 +163,6 @@
     line-height: 1.5 !important;
 }
 
-/* Tablo için ek düzenlemeler */
 [data-sanalpospro-table] {
     font-size: 14px !important;
     width: 100% !important;
@@ -189,7 +186,6 @@
     font-size: 13px !important;
 }
 
-/* Yeni eklenen stil iyileştirmeleri */
 [data-sanalpospro-wrapper] button {
     background-color: #4a6cf7 !important;
     color: white !important;

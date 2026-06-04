@@ -13,9 +13,9 @@ wp_enqueue_style(
 global $product;
 if (!$product) return;
 
-$price = $product->get_price();
-$installments = json_decode(empty($installments) ? '[]' : $installments, true);
-$all_card_families = [
+$sppro_price = $product->get_price();
+$sppro_installments = json_decode(empty($installments) ? '[]' : $installments, true);
+$sppro_all_card_families = [
     'world', 'axess', 'bonus', 'cardfinans', 'maximum',
     'paraf', 'saglamcard', 'advantage', 'combo', 'miles-smiles'
 ];
@@ -24,28 +24,28 @@ $all_card_families = [
 
 <div data-sanalpospro-wrapper>
     <div data-sanalpospro-container>
-        <?php foreach($all_card_families as $card_key) : 
-            $has_any_installment = false;
+        <?php foreach($sppro_all_card_families as $sppro_card_key) : 
+            $sppro_has_any_installment = false;
             
            
-            if(!empty($installments[$card_key])) {
-                $card_installments = array_filter($installments[$card_key], function($installment) {
-                    return $installment['gateway'] !== 'off';
+            if(!empty($sppro_installments[$sppro_card_key])) {
+                $sppro_card_installments = array_filter($sppro_installments[$sppro_card_key], function($sppro_inst) {
+                    return $sppro_inst['gateway'] !== 'off';
                 });
 
-                if(!empty($card_installments)) {
-                    $has_any_installment = true;
+                if(!empty($sppro_card_installments)) {
+                    $sppro_has_any_installment = true;
                 }
             }
 
-            if(!$has_any_installment) continue;
+            if(!$sppro_has_any_installment) continue;
 
             echo '<div data-sanalpospro-card>';
             echo '<table data-sanalpospro-table>';
             echo '<thead>';
             echo '<tr>';
             echo '<td colspan="3">';
-            echo wp_kses_post(sppro_get_card_image($card_key));
+            echo wp_kses_post(sppro_get_card_image($sppro_card_key));
             echo '</td>';
             echo '</tr>';
             echo '<tr>';
@@ -56,37 +56,37 @@ $all_card_families = [
             echo '</thead>';
             echo '<tbody>';
 
-            for($i = 1; $i <= 12; $i++) {
-                $installment_exists = false;
-                $monthly_payment = '-';
-                $total_amount = '-';
+            for($sppro_i = 1; $sppro_i <= 12; $sppro_i++) {
+                $sppro_installment_exists = false;
+                $sppro_monthly_payment = '-';
+                $sppro_total_amount = '-';
 
-                foreach($card_installments as $installment) {
-                    if($installment['months'] == $i) {
-                        $installment_exists = true;
-                        if($i == 1 && $installment['buyer_fee_percent'] == 0) {
-                            $total = $price;
-                            $monthly = $total;
+                foreach($sppro_card_installments as $sppro_installment) {
+                    if($sppro_installment['months'] == $sppro_i) {
+                        $sppro_installment_exists = true;
+                        if($sppro_i == 1 && $sppro_installment['buyer_fee_percent'] == 0) {
+                            $sppro_total = $sppro_price;
+                            $sppro_monthly = $sppro_total;
                         } else {
-                            $total = ($price * 100) / (100 - $installment['buyer_fee_percent']);
-                            $monthly = $total/$i;
+                            $sppro_total = ($sppro_price * 100) / (100 - $sppro_installment['buyer_fee_percent']);
+                            $sppro_monthly = $sppro_total/$sppro_i;
                         }
-                        $monthly_payment = wp_kses_post(wc_price($monthly));
-                        $total_amount = wp_kses_post(wc_price($total));
+                        $sppro_monthly_payment = wp_kses_post(wc_price($sppro_monthly));
+                        $sppro_total_amount = wp_kses_post(wc_price($sppro_total));
                         break;
                     }
                 }
 
                 echo '<tr>';
-                echo '<td>' . ($i == 1 ? 
+                echo '<td>' . ($sppro_i == 1 ? 
                      esc_html__('Cash', 'sanalpospro-payment-module') : 
                      sprintf(
                          /* translators: %d: Installment number */
                          esc_html__('%d. Installment', 'sanalpospro-payment-module'),
-                         esc_html($i)
+                         esc_html($sppro_i)
                      )) . '</td>';
-                echo '<td>' . wp_kses_post($monthly_payment) . '</td>';
-                echo '<td>' . wp_kses_post($total_amount) . '</td>';
+                echo '<td>' . wp_kses_post($sppro_monthly_payment) . '</td>';
+                echo '<td>' . wp_kses_post($sppro_total_amount) . '</td>';
                 echo '</tr>';
             }
 

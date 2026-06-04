@@ -1,6 +1,11 @@
 /**
- * SanalPosPRO Payment Gateway checkout script
- * Handles the payment iframe and communication with the payment provider
+ * Checkout.js
+ * @package Eticsoft.Sanalpospro
+ * @description Classic WooCommerce checkout iframe and postMessage handling.
+ * @version 1.0
+ * @since 1.0
+ * @author EticSoft R&D Lab.
+ * @license MIT
  */
 (function($) {
     const getDetailValue = function(paymentResult, key) {
@@ -39,7 +44,6 @@
 
             if (event.data && event.data.isSuccess) {
                 $('.sppro-close-iframe').hide();
-
                 const redirectUrl = getRedirectUrl();
                 if (redirectUrl) {
                     window.location.href = redirectUrl + '&p_id=' + encodeURIComponent(event.data.processID || '');
@@ -87,7 +91,6 @@
             return true;
         };
 
-        // WooCommerce sürümüne göre event body veya form üzerinde tetiklenebiliyor.
         $(document.body).on('checkout_place_order_success', function(event, response) {
             return handleCheckoutSuccess(response);
         });
@@ -96,7 +99,6 @@
             return handleCheckoutSuccess(response);
         });
 
-        // Safety net: Event kaçarsa checkout AJAX cevabından modalı aç.
         $(document).ajaxSuccess(function(event, xhr, settings) {
             try {
                 const url = (settings && settings.url) ? settings.url : '';
@@ -116,9 +118,7 @@
                 }
 
                 handleCheckoutSuccess(response);
-            } catch (e) {
-                // no-op
-            }
+            } catch (e) {}
         });
     });
 })(jQuery);

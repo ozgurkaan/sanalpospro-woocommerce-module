@@ -1,9 +1,9 @@
 <?php
 /**
- * Class InternalApi 
+ * Class InternalApi
  * @package Eticsoft\Sanalpospro
- * @description InternalApi class is used to handle the internal api requests 
- * from the module admin UI. 
+ * @description InternalApi class is used to handle the internal api requests
+ * from the module admin UI.
  * @version 1.0
  * @since 1.0
  * @author EticSoft R&D Lab.
@@ -12,7 +12,6 @@
 
 namespace Eticsoft\Sanalpospro;
 
-// Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
 use Eticsoft\Sanalpospro\EticContext;
@@ -189,11 +188,9 @@ class InternalApi
             'accesstoken' => $accessToken
         ]);
 
-        // Ensure $this->response is always an array
         if (is_array($response)) {
             $this->response = $response;
-            
-            // API'den dönen token_string'i kaydet
+
             if (isset($this->response['data']['token_string'])) {
                 EticConfig::set('SANALPOSPRO_ACCESS_TOKEN', $this->response['data']['token_string']);
             }
@@ -269,14 +266,12 @@ class InternalApi
         return $this->setResponse('success', 'Installment options updated successfully');
     }
 
-   private function actionCreatePaymentLink(): self
+    private function actionCreatePaymentLink(): self
     {
         if (!isset($this->params['order_id']) || empty($this->params['order_id'])) {
             return $this->setResponse('error', 'Order ID is required');
         }
-        if (!isset($this->params['receipt_nonce']) || empty($this->params['receipt_nonce'])) {
-            return $this->setResponse('error', 'Receipt nonce is required');
-        }
+      
 
         $order_id = sanitize_text_field($this->params['order_id']);
     
@@ -410,23 +405,29 @@ class InternalApi
         }
         $receipt_nonce = $this->params['receipt_nonce'];
      
-        $order_confirmation_url = add_query_arg(
+        $callback_url = add_query_arg(
             array(
+                'wc-api'   => 'sppro_callback',
                 'order_id' => $order_id,
-                'key' => $order->get_order_key(),
-                '_wpnonce' => $receipt_nonce
+                'key'      => $order->get_order_key(),
             ),
-            $order->get_checkout_payment_url(true)
+            home_url( '/' )
         );
-   
-        
+
+        \SPPRO_Logger::info( 'CreatePaymentLink: callback URL generated', array(
+            'callback_url' => $callback_url,
+            'order_id'     => $order_id,
+            'home_url'     => home_url( '/' ),
+        ) );
+
         $payment = new PaymentModel();
         $payment->setAmount($cart_total);
         $payment->setCurrency(get_woocommerce_currency());
         $payment->setBuyerFee('0');
         $payment->setMethod('creditcard');
         $payment->setMerchantReference($order_id);
-        $payment->setReturnUrl($order_confirmation_url);
+        $payment->setCallbackUrl($callback_url);
+       /*  $payment->setReturnUrl($callback_url); */ 
         
         $payerAddress = new Address();
         //$payerAddress->setLine1($customer->get_billing_address_1());
@@ -508,35 +509,73 @@ class InternalApi
         $paymentRequest->setPayer($payer);
         $paymentRequest->setOrder($order);
 
-        $result = Payment::createPayment($paymentRequest->toArray());
-                
+        $request_data = $paymentRequest->toArray();
+
+        \SPPRO_Logger::info( 'CreatePaymentLink: request data', $request_data );
+
+        $result = Payment::createPayment($request_data);
+
+   /*      \SPPRO_Logger::info('CreatePaymentLink: API response', array(
+            'order_id' => $order_id,
+            'status'   => $result['status'] ?? 'unknown',
+            'message'  => $result['message'] ?? '',
+            'has_link' => !empty($result['data']['payment_link']),
+        )); */
+
         $this->response = $result;
         return $this;
     }
     private function actionConfirmOrder(): self
     {
-        $order_id = $this->params['order_id'];
+        $order_id = $this->params['order_id'] ?? null;
+
+        if (empty($order_id) && function_exists('WC') && WC()->session) {
+            $order_id = WC()->session->get('order_awaiting_payment');
+        }
+
+        \SPPRO_Logger::info('ConfirmOrder: started', array(
+            'order_id'      => $order_id,
+            'process_token' => $this->params['process_token'] ?? '',
+        ));
+
         $order = \wc_get_order($order_id);
 
         if (!$order) {
+            \SPPRO_Logger::error('ConfirmOrder: order not found', array('order_id' => $order_id));
             return $this->setResponse('error', 'Order not found');
         }
 
+        if ($order->is_paid()) {
+            \SPPRO_Logger::info('ConfirmOrder: order already paid', array('order_id' => $order_id));
+            return $this->setResponse('success', 'Order already confirmed', [
+                'amount' => $order->get_total(),
+                'gateway' => $order->get_payment_method()
+            ]);
+        }
+
         try {
-            $process_token = $this->params['process_token'];
+            $process_token = $this->params['process_token'] ?? '';
+
+            if (empty($process_token)) {
+                \SPPRO_Logger::error('ConfirmOrder: empty process_token, skipping', array('order_id' => $order_id));
+                return $this->setResponse('error', 'Missing process token');
+            }
+
             $res = Payment::validatePayment($process_token);
+
+            \SPPRO_Logger::info('ConfirmOrder: validatePayment response', array(
+                'order_id' => $order_id,
+                'response' => $res,
+            ));
 
             if ($res['status'] != 'success') {
                 $order->update_status('failed', __('Payment validation failed', 'sanalpospro-payment-module'));
                 return $this->setResponse('error', 'Payment validation failed');
             }
-            
 
             $transaction = $res['data']['transaction'] ?? [];
             $process = $res['data']['process'] ?? [];
             $result = $res['data']['result'] ?? [];
- 
-           
 
             if (
                 ($transaction['status'] === 'completed') && 
@@ -544,9 +583,60 @@ class InternalApi
                 ($result['status'] === 'completed')
             ) 
             {
+                $amount = $process['amount'] ?? 0;
+                $gateway = $process['gateway'] ?? 'sanalpospro';
+                $installment = $res['data']['installment'] ?? 1;
+
+                $installment_text = ($installment > 1)
+                    ? sprintf(__('Paid in %d installments.', 'sanalpospro-payment-module'), $installment)
+                    : __('Paid in full (single payment).', 'sanalpospro-payment-module');
+
+                $order->update_status(
+                    EticConfig::get('SANALPOSPRO_ORDER_STATUS'),
+                    sprintf(
+                        __('Payment confirmed via SanalPosPRO. %s', 'sanalpospro-payment-module'),
+                        $installment_text
+                    )
+                );
+
+                $order->add_order_note(
+                    sprintf(
+                        __('Payment completed successfully via %s. Amount: %s - %s', 'sanalpospro-payment-module'),
+                        $gateway,
+                        wc_price($amount),
+                        $installment_text
+                    )
+                );
+
+                $original_total = floatval($order->get_total());
+                $tax_amount = floatval($amount) - $original_total;
+
+                if ($tax_amount > 0) {
+                    $fee = new \WC_Order_Item_Fee();
+                    $fee->set_name(__('Commission Fee', 'sanalpospro-payment-module'));
+                    $fee->set_amount($tax_amount);
+                    $fee->set_total($tax_amount);
+                    $fee->set_tax_class('');
+                    $fee->set_tax_status('none');
+                    $order->add_item($fee);
+                    $order->calculate_totals();
+                }
+
+                $order->save();
+
+                if (function_exists('WC') && WC()->cart) {
+                    WC()->cart->empty_cart();
+                }
+
+                \SPPRO_Logger::info('ConfirmOrder: order confirmed successfully', array(
+                    'order_id' => $order_id,
+                    'amount'   => $amount,
+                    'gateway'  => $gateway,
+                ));
+
                 return $this->setResponse('success', 'Payment validated', [
-                    'amount' => $process['amount'] ?? 0,
-                    'gateway' => $process['gateway'] ?? ''
+                    'amount' => $amount,
+                    'gateway' => $gateway
                 ]);
             } else {
                 $error_message = $result['message'] ?? $process['result_message'] ?? 'Payment failed';

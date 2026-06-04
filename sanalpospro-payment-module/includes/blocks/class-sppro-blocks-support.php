@@ -1,31 +1,24 @@
 <?php
-// Exit if accessed directly
+/**
+ * Class SPPRO_Blocks_Support
+ * @package Eticsoft\Sanalpospro
+ * @description WooCommerce Blocks checkout integration for SanalPosPRO gateway.
+ * @version 1.0
+ * @since 1.0
+ * @author EticSoft R&D Lab.
+ * @license MIT
+ */
+
 if (!defined('ABSPATH')) exit;
 
 use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType;
 
-/**
- * WooCommerce Blocks integration for SanalPosPRO gateway
- */
 final class SPPRO_Blocks_Support extends AbstractPaymentMethodType
 {
-    /**
-     * Gateway ID
-     *
-     * @var string
-     */
     protected $name = 'sanalpospro';
 
-    /**
-     * Gateway instance
-     *
-     * @var WC_Payment_Gateway|null
-     */
     private $gateway = null;
 
-    /**
-     * Initialize integration
-     */
     public function initialize()
     {
         if (!function_exists('WC') || !WC() || !WC()->payment_gateways()) {
@@ -36,24 +29,13 @@ final class SPPRO_Blocks_Support extends AbstractPaymentMethodType
         $this->gateway = $payment_gateways[$this->name] ?? null;
     }
 
-    /**
-     * Is payment method active?
-     *
-     * @return bool
-     */
     public function is_active()
     {
         return $this->gateway && $this->gateway->is_available();
     }
 
-    /**
-     * Register frontend script for Blocks checkout
-     *
-     * @return string[]
-     */
     public function get_payment_method_script_handles()
     {
-        // Never load Blocks integration assets when checkout is Classic.
         if (!$this->is_block_checkout_enabled()) {
             return array();
         }
@@ -74,11 +56,6 @@ final class SPPRO_Blocks_Support extends AbstractPaymentMethodType
         return array($script_handle);
     }
 
-    /**
-     * Detect if store checkout page uses WooCommerce Checkout Block.
-     *
-     * @return bool
-     */
     private function is_block_checkout_enabled()
     {
         if (!function_exists('wc_get_page_id')) {
@@ -98,11 +75,6 @@ final class SPPRO_Blocks_Support extends AbstractPaymentMethodType
         return has_block('woocommerce/checkout', $checkout_page->post_content);
     }
 
-    /**
-     * Data passed to frontend script
-     *
-     * @return array
-     */
     public function get_payment_method_data()
     {
         if (!$this->gateway) {

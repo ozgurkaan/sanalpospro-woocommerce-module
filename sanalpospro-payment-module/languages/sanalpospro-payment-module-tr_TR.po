@@ -280,3 +280,22 @@ msgstr "Vergi"
 #: vendor/Eticsoft/Sanalpospro/InternalApi.php:472
 msgid "Payment validation failed"
 msgstr "Ödeme doğrulaması başarısız oldu"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php
+#, php-format
+msgid "Paid in %d installments."
+msgstr "%d taksit ile ödeme yapıldı."
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php
+msgid "Paid in full (single payment)."
+msgstr "Tek çekim olarak ödeme yapıldı."
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php
+#, php-format
+msgid "Payment confirmed via SanalPosPRO. %s"
+msgstr "SanalPosPRO üzerinden ödeme onaylandı. %s"
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php
+#, php-format
+msgid "Payment completed successfully via %s. Amount: %s - %s"
+msgstr "Ödeme %s aracılığıyla başarıyla tamamlandı. Tutar: %s - %s"

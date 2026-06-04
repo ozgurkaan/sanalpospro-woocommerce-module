@@ -177,7 +177,6 @@
     }
 }
 
-/* Sadece ödeme sayfasında SanalPosPro logosunu gizle */
 .woocommerce-checkout .payment_method_sanalpospro img {
     display: none !important;
 } 

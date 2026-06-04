@@ -13,27 +13,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Domain: sanalpospro-payment-module\n"
 
-#: sanalpospro.php:11
+#: sanalpospro.php:15
 msgid "SanalPosPRO Payment Gateway"
 msgstr ""
 
-#: sanalpospro.php:110
+#: sanalpospro.php:131
 msgid "Warning"
 msgstr ""
 
-#: sanalpospro.php:123
+#: sanalpospro.php:144
 msgid "SanalPosPro Payment Gateway Warning"
 msgstr ""
 
-#: sanalpospro.php:123
+#: sanalpospro.php:144
 msgid "You need to switch to Classic Checkout view!"
 msgstr ""
 
-#: sanalpospro.php:124
+#: sanalpospro.php:145
 msgid "How to do it?"
 msgstr ""
 
-#: sanalpospro.php:139
+#: sanalpospro.php:161
 msgid "SanalPosPro Payment Gateway Compatibility Notice"
 msgstr ""
 
@@ -74,106 +74,93 @@ msgid ""
 "our plugin."
 msgstr ""
 
-#: sanalpospro.php:166
+#: sanalpospro.php:187
 #, php-format
 msgid ""
 "SanalPosPRO Payment Gateway requires PHP version %1$s or higher. You are "
 "running version %2$s. Please upgrade PHP and try again."
 msgstr ""
 
-#: sanalpospro.php:170 sanalpospro.php:185 sanalpospro.php:195
+#: sanalpospro.php:191 sanalpospro.php:206 sanalpospro.php:216
 msgid "Plugin Activation Error"
 msgstr ""
 
-#: sanalpospro.php:181
+#: sanalpospro.php:202
 #, php-format
 msgid ""
 "SanalPosPRO Payment Gateway requires WordPress version %1$s or higher. You "
 "are running version %2$s. Please upgrade WordPress and try again."
 msgstr ""
 
-#: sanalpospro.php:194
+#: sanalpospro.php:215
 msgid ""
 "SanalPosPRO Payment Gateway requires WooCommerce to be installed and "
 "activated."
 msgstr ""
 
-#: sanalpospro.php:254
+#: sanalpospro.php:275
 msgid "SanalPosPRO Payment Gateway for WooCommerce plugin"
 msgstr ""
 
-#: sanalpospro.php:260
+#: sanalpospro.php:281
 msgid "Pay via Card (SanalPosPRO)"
 msgstr ""
 
-#: sanalpospro.php:261
+#: sanalpospro.php:282
 msgid "Payment by your credit/debit card."
 msgstr ""
 
-#: sanalpospro.php:284
+#: sanalpospro.php:305
 msgid "Enable/Disable"
 msgstr ""
 
-#: sanalpospro.php:286 sanalpospro.php:288
+#: sanalpospro.php:307 sanalpospro.php:309
 msgid "Enable/Disable SanalPosPRO payment gateway"
 msgstr ""
 
-#: sanalpospro.php:326
+#: sanalpospro.php:347
 msgid "Click to Access SanalPosPRO Panel"
 msgstr ""
 
-#: sanalpospro.php:363
+#: sanalpospro.php:385
 msgid "Error Code"
 msgstr ""
 
-#: sanalpospro.php:418
+#: sanalpospro.php:442
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: sanalpospro.php:424
+#: sanalpospro.php:449
 msgid "Invalid order."
 msgstr ""
 
-#: sanalpospro.php:429
+#: sanalpospro.php:455
 msgid "You do not have permission to view this order."
 msgstr ""
 
-#: sanalpospro.php:437
+#: sanalpospro.php:468
 msgid "Invalid payment ID."
 msgstr ""
 
-#: sanalpospro.php:453
+#: sanalpospro.php:487
 msgid "Payment failed"
 msgstr ""
 
-#: sanalpospro.php:459
-msgid "Processing SanalPosPRO payment"
-msgstr ""
-
-#: sanalpospro.php:463
-#, php-format
-msgid "Payment completed successfully via %s."
-msgstr ""
-
-#: sanalpospro.php:472
-msgid "Commission Fee"
-msgstr ""
-
-#: sanalpospro.php:498
+#: sanalpospro.php:531
 msgid "SanalPosPRO Payment Warning"
 msgstr ""
 
-#: sanalpospro.php:499
+#: sanalpospro.php:532
 msgid "Payment was processed through SanalPosPRO"
 msgstr ""
 
-#: sanalpospro.php:500
+#: sanalpospro.php:533
 msgid ""
 "Please check the payment status and verify with your bank/payment "
 "institution."
 msgstr ""
 
-#: sanalpospro.php:569
+#: sanalpospro.php:617
 msgid "Installment Options"
 msgstr ""
 
@@ -242,36 +229,42 @@ msgstr ""
 msgid "Loading payment page..."
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:344
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:355
 msgid "Discount"
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:360
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:371
 msgid "Shipping"
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:386
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:391
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:397
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:402
 msgid "Tax"
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:472
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:575
 msgid "Payment validation failed"
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:452
-msgid "Payment failed"
-msgstr ""
-
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:458
-msgid "Processing SanalPosPRO payment"
-msgstr ""
-
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:462
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:594
 #, php-format
-msgid "Payment completed successfully via %s."
+msgid "Paid in %d installments."
 msgstr ""
 
-#: vendor/Eticsoft/Sanalpospro/InternalApi.php:471
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:595
+msgid "Paid in full (single payment)."
+msgstr ""
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:600
+#, php-format
+msgid "Payment confirmed via SanalPosPRO. %s"
+msgstr ""
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:607
+#, php-format
+msgid "Payment completed successfully via %s. Amount: %s - %s"
+msgstr ""
+
+#: vendor/Eticsoft/Sanalpospro/InternalApi.php:619
 msgid "Commission Fee"
 msgstr ""
