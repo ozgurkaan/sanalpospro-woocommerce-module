@@ -1,4 +1,14 @@
 <?php
+/**
+ * Class SPPRO_Admin
+ * @package Eticsoft\Sanalpospro
+ * @description Admin panel menu, assets and SanalPosPRO settings UI.
+ * @version 1.0
+ * @since 1.0
+ * @author EticSoft R&D Lab.
+ * @license MIT
+ */
+
 if (!defined('ABSPATH')) {
     exit;
 }

@@ -1,3 +1,12 @@
+/**
+ * Blocks-integration.js
+ * @package Eticsoft.Sanalpospro
+ * @description WooCommerce Blocks checkout iframe and place-order UI handling.
+ * @version 1.0
+ * @since 1.0
+ * @author EticSoft R&D Lab.
+ * @license MIT
+ */
 (function () {
     const wcBlocksRegistry = window.wc && window.wc.wcBlocksRegistry;
     const wcSettings = window.wc && window.wc.wcSettings;
@@ -56,9 +65,7 @@
                     stateReset = true;
                 }
             }
-        } catch (e) {
-            // no-op
-        }
+        } catch (e) {}
 
         try {
             const paymentStore = wcBlocksData.paymentStore || 'wc/store/payment';
@@ -76,9 +83,7 @@
                     stateReset = true;
                 }
             }
-        } catch (e) {
-            // no-op
-        }
+        } catch (e) {}
 
         return stateReset;
     };
@@ -115,10 +120,8 @@
             checkoutRoot.removeAttribute('aria-busy');
         }
 
-        // 1) Önce Woo Blocks state'ini resmi store dispatch ile idle'a çekmeyi dene.
         const stateReset = resetWooBlocksCheckoutState();
 
-        // 2) Sonra UI'yı normalize et. React yeniden yazabildiği için retry yap.
         let attempts = 0;
         const maxAttempts = stateReset ? 12 : 20;
 
@@ -137,7 +140,6 @@
             if (!stillLocked || attempts >= maxAttempts) {
                 clearInterval(timer);
 
-                // Eğer internal state resetlenmemişse son çare soft reload.
                 if (stillLocked && !stateReset) {
                     window.location.reload();
                 }
@@ -253,9 +255,7 @@
                 if ((paymentMethod === 'sanalpospro' || iframeHtml) && iframeHtml) {
                     appendIframeModal(iframeHtml, redirectUrl);
                 }
-            } catch (e) {
-                // no-op
-            }
+            } catch (e) {}
 
             return response;
         };

@@ -1,11 +1,12 @@
 <?php
-// Exit if accessed directly
+
 if (!defined('ABSPATH')) exit;
 
 /* ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL); */
 
+require_once __DIR__ . '/includes/class-sppro-logger.php';
 require_once __DIR__ . '/vendor/include.php';
 
 use Eticsoft\Sanalpospro\EticConfig;
@@ -14,7 +15,7 @@ use Eticsoft\Sanalpospro\EticConfig;
  * Plugin Name: SanalPosPRO Payment Gateway
  * Plugin URI: https://sanalpospro.com
  * Description: SanalPosPRO payment gateway for WooCommerce
- * Version: 10.0.4
+ * Version: 10.1.0
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: EticSoft R&D Lab.
@@ -25,9 +26,8 @@ use Eticsoft\Sanalpospro\EticConfig;
  * Domain Path: /languages
  */
 
-// Define constants
 if (!defined('SPPRO_VERSION')) {
-    define('SPPRO_VERSION', '10.0.4');
+    define('SPPRO_VERSION', '10.1.0');
 }
 if (!defined('SPPRO_PLUGIN_URL')) {
     define('SPPRO_PLUGIN_URL', plugin_dir_url(__FILE__));
@@ -37,29 +37,22 @@ if (!defined('SPPRO_PLUGIN_DIR')) {
 }
 define('SPPRO_PLUGIN_FILE', __FILE__);
 
-// Hook registration
 register_activation_hook(__FILE__, 'sppro_activate_plugin');
 add_action('plugins_loaded', 'sppro_setup_gateway_class');
 add_action('plugins_loaded', 'sppro_setup_admin_page');
 add_action('woocommerce_blocks_loaded', 'sppro_register_block_support');
 add_action('wp_footer', 'sppro_add_payment_iframe_script');
 add_action('wp_ajax_sppro_internal_api_request', 'sppro_internal_api_request');
-add_action('wp_ajax_nopriv_sppro_internal_api_request', 'sppro_internal_api_request');
 add_action('wp_enqueue_scripts', 'sppro_enqueue_styles');
 add_action('admin_enqueue_scripts', 'sppro_enqueue_admin_assets');
+add_action('woocommerce_api_sppro_callback', 'sppro_handle_payment_callback');
 
 
-/**
- * Enqueue admin assets
- */
 function sppro_enqueue_admin_assets() {
     wp_enqueue_style('sppro-admin-popup', SPPRO_PLUGIN_URL . 'assets/css/admin-popup.css', array(), SPPRO_VERSION);
     wp_enqueue_script('sppro-admin-popup', SPPRO_PLUGIN_URL . 'assets/js/admin-popup.js', array('jquery'), SPPRO_VERSION, true);
 }
 
-/**
- * Register WooCommerce Blocks checkout support
- */
 function sppro_register_block_support()
 {
     if (!class_exists('Automattic\\WooCommerce\\Blocks\\Payments\\Integrations\\AbstractPaymentMethodType')) {
@@ -76,10 +69,6 @@ function sppro_register_block_support()
     );
 }
 
-/**
- * Check theme compatibility
- * Displays admin notice if WooCommerce block checkout is enabled
- */
 function sppro_check_theme_compatibility()
 {
 
@@ -112,18 +101,13 @@ function sppro_check_theme_compatibility()
     }
 }
 
-/**
- * Display admin notice for WooCommerce block checkout incompatibility
- */
 function sppro_block_checkout_admin_notice()
 {
-   // Ensure the popup HTML is added to the footer
    add_action('admin_footer', 'sppro_popup_html');
    ?>
        <div class="notice notice-error sppro-notice" style="display: flex; align-items: center; padding: 15px 20px;">
            <div style="margin-right: 15px;">
                <?php
-               // Using proper WordPress way to display an image
                $image_attributes = [
                    'src' => esc_url(WC()->plugin_url() . '/assets/images/icons/info.svg'),
                    'alt' => esc_attr__('Warning', 'sanalpospro-payment-module'),
@@ -147,9 +131,6 @@ function sppro_block_checkout_admin_notice()
    <?php
 }
 
-/**
- * Add popup HTML to admin footer
- */
 function sppro_popup_html() {
     ?>
     <div class="sppro-popup-overlay" id="sppro-popup">
@@ -170,10 +151,6 @@ function sppro_popup_html() {
     <?php
     }
     
-/**
- * Plugin activation function
- * Checks requirements and sets up default settings
- */
 function sppro_activate_plugin()
 {
 
@@ -216,7 +193,6 @@ function sppro_activate_plugin()
         );
     }
 
-    // Set default settings
     $default_settings = array(
         'SANALPOSPRO_ORDER_STATUS' => 'processing',
         'SANALPOSPRO_CURRENCY_CONVERT' => 'no',
@@ -232,13 +208,9 @@ function sppro_activate_plugin()
         }
     }
 
-    // Flush rewrite rules
     flush_rewrite_rules();
 }
 
-/**
- * Setup admin page
- */
 function sppro_setup_admin_page()
 {
     if (is_admin()) {
@@ -247,23 +219,14 @@ function sppro_setup_admin_page()
     }
 }
 
-/**
- * Setup payment gateway class
- */
 function sppro_setup_gateway_class()
 {
     if (!class_exists('WC_Payment_Gateway')) {
         return;
     }
 
-    /**
-     * SanalPosPRO Payment Gateway Class
-     */
     class SPPRO_Payment_Gateway extends WC_Payment_Gateway
     {
-        /**
-         * Constructor for the gateway
-         */
         public function __construct()
         {
             $this->id = 'sanalpospro';
@@ -279,7 +242,6 @@ function sppro_setup_gateway_class()
             $this->title = __('Pay via Card (SanalPosPRO)', 'sanalpospro-payment-module');
             $this->description = __('Payment by your credit/debit card.', 'sanalpospro-payment-module');
 
-            // Actions and filters
             add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
             add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
             add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
@@ -293,9 +255,6 @@ function sppro_setup_gateway_class()
         }
 
 
-        /**
-         * Initialize form fields for the gateway settings
-         */
         public function init_form_fields()
         {
             $this->form_fields = array(
@@ -316,9 +275,6 @@ function sppro_setup_gateway_class()
             );
         }
 
-        /**
-         * Check if gateway is available for use
-         */
         public function is_available()
         {
 
@@ -334,9 +290,6 @@ function sppro_setup_gateway_class()
             return true;
         }
 
-        /**
-         * Generate panel button HTML
-         */
         public function generate_panel_button_html($key, $data)
         {
             return '<tr><td colspan="2" style="padding-left: 0;">
@@ -347,9 +300,6 @@ function sppro_setup_gateway_class()
             </td></tr>';
         }
 
-        /**
-         * Payment fields displayed on checkout
-         */
         public function payment_fields()
         {
             $supported_cards = array('visa', 'mastercard', 'amex', 'troy');
@@ -360,14 +310,11 @@ function sppro_setup_gateway_class()
             ));
         }
 
-        /**
-         * Process payment
-         */
         public function process_payment($order_id)
         {
             $order = wc_get_order($order_id);
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- WooCommerce pay-for-order query arg.
             $pay_for_order = isset($_GET['pay_for_order']) && sanitize_text_field(wp_unslash($_GET['pay_for_order']));
-            $xfvv = wp_create_nonce('sppro_internal_api_request');
             $receipt_nonce = wp_create_nonce('sppro_payment_confirmation');
             try {
                 $api = new \Eticsoft\Sanalpospro\InternalApi();
@@ -413,8 +360,6 @@ function sppro_setup_gateway_class()
                 return array(
                     'result' => 'success',
                     'messages' => 'Payment link created successfully',
-                    // Important: do NOT send WooCommerce `redirect` here.
-                    // Both Classic and Blocks must open iframe modal first.
                     'iframe_html' => $iframe_html,
                     'redirect_url' => $order_confirmation_url
                 ); 
@@ -427,34 +372,20 @@ function sppro_setup_gateway_class()
             }
         }
 
-        /**
-         * Receipt page
-         */
-
         public function receipt_page($order_id)
         {
-         
-          
-            // Verify nonce to prevent CSRF attacks
             if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'sppro_payment_confirmation')) {
                 wp_die(esc_html__('Security check failed. Please try again.', 'sanalpospro-payment-module'));
             }
-         
-
-            // Verify user has permission to view this order
             $order = wc_get_order(absint($order_id));
             if (!$order) {
                 wp_die(esc_html__('Invalid order.', 'sanalpospro-payment-module'));
             }
-           
-
-            // Check if user has permission to view this order
             if (!current_user_can('manage_woocommerce') && $order->get_customer_id() !== get_current_user_id()) {
                 wp_die(esc_html__('You do not have permission to view this order.', 'sanalpospro-payment-module'));
             }
-          
 
-            // Sanitize and validate input parameters
+
             $p_id = isset($_GET['p_id']) ? sanitize_text_field(wp_unslash($_GET['p_id'])) : null;
             $id = empty($id) ? $order_id : $id;
 
@@ -484,59 +415,31 @@ function sppro_setup_gateway_class()
                 if ($response['status'] !== 'success') {
                     $order->update_status('failed', __('Payment failed', 'sanalpospro-payment-module'));
                     wc_add_notice($response['message'], 'error');
-                    wp_redirect(wc_get_checkout_url());
+                    wp_safe_redirect(wc_get_checkout_url());
                     exit;
                 }
 
-                $order->update_status(EticConfig::get('SANALPOSPRO_ORDER_STATUS'), __('Processing SanalPosPRO payment', 'sanalpospro-payment-module'));
-                $order->add_order_note(
-                    sprintf(
-                        /* translators: %s: Payment gateway name */
-                        __('Payment completed successfully via %s.', 'sanalpospro-payment-module'),
-                        $response['data']['gateway']  ?? 'sanalpospro'
-                    )
-                );
-                $amount = $response['data']['amount'] ?? 0;
-                $original_total = $order->get_total();
-                $transaction_amount = $amount;
-                $tax_amount = $transaction_amount - $original_total;
-                $fee = new WC_Order_Item_Fee();
-                $fee->set_name(__('Commission Fee', 'sanalpospro-payment-module'));
-                $fee->set_amount($tax_amount);
-                $fee->set_total($tax_amount);
-                $fee->set_tax_class('');
-                $fee->set_tax_status('none');
-                $order->add_item($fee);
-                $order->calculate_totals();
-                $order->save();
                 WC()->cart->empty_cart();
                 $checkOutUrl = $order->get_checkout_order_received_url();
-                return wp_redirect($checkOutUrl);
+                wp_safe_redirect($checkOutUrl);
+                exit;
             } catch (Exception $e) {
                 $order->update_status('failed', $e->getMessage());
                 wc_add_notice($e->getMessage(), 'error');
-                wp_redirect(wc_get_checkout_url());
+                wp_safe_redirect(wc_get_checkout_url());
                 exit;
             }
         }
 
-        /**
-         * Show payment warning in admin
-         */
         public function show_payment_warning($order) {
-            // Static flag to prevent duplicate warnings
             static $warning_shown = [];
-            
-            // Create a unique ID for this order
             $order_id = $order->get_id();
-            
-            // Check if warning already shown for this order
+
             if (isset($warning_shown[$order_id])) {
                 return;
             }
             
             if ($order->get_payment_method() === 'sanalpospro') {
-                // Only show warning for orders with completed payment status
                 $completed_statuses = array(
                     EticConfig::get('SANALPOSPRO_ORDER_STATUS'),
                     'completed',
@@ -551,8 +454,7 @@ function sppro_setup_gateway_class()
                         <p>' . esc_html__('Payment was processed through SanalPosPRO', 'sanalpospro-payment-module') . '</p>
                         <p>' . esc_html__('Please check the payment status and verify with your bank/payment institution.', 'sanalpospro-payment-module') . '</p>
                     </div>';
-                    
-                    // Mark this order as having shown the warning
+
                     $warning_shown[$order_id] = true;
                 }
             }
@@ -569,9 +471,6 @@ function sppro_setup_gateway_class()
             }
         } */
 
-        /**
-         * Allow iframe in HTML
-         */
         public function allow_iframe_in_html($tags, $context)
         {
             if ('admin' === $context) {
@@ -593,30 +492,14 @@ function sppro_setup_gateway_class()
             return $tags;
         }
 
-        /**
-         * Remove wpautop
-         */
         public function remove_wpautop($settings)
         {
             remove_filter('woocommerce_payment_gateway_form_fields_' . $this->id, 'wpautop');
             return $settings;
         }
 
-        /**
-         * Enqueue scripts
-         */
         public function enqueue_scripts()
         {
-
-
-            $nonce = wp_create_nonce('sppro_internal_api_request');
-
-
-            wp_localize_script('jquery', 'sppro_params', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'iapi_xfvv' => $nonce
-            ));
-
             wp_enqueue_style('sppro-payment-style', plugins_url('assets/css/payment.css', __FILE__), array(), SPPRO_VERSION);
         }
     }
@@ -625,9 +508,6 @@ function sppro_setup_gateway_class()
 
 add_filter('woocommerce_product_tabs', 'sppro_add_installment_tab');
 
-/**
- * Add installment tab to product page
- */
 function sppro_add_installment_tab($tabs)
 {
     $showInstallmentsTabs = EticConfig::get('SANALPOSPRO_SHOWINSTALLMENTSTABS');
@@ -641,9 +521,6 @@ function sppro_add_installment_tab($tabs)
     return $tabs;
 }
 
-/**
- * Display installment tab content
- */
 function sppro_installment_tab_content()
 {
     global $product;
@@ -665,9 +542,6 @@ function sppro_installment_tab_content()
 }
 
 
-/**
- * Add gateway class to WooCommerce
- */
 function sppro_add_gateway_class($methods)
 {
     $methods[] = 'SPPRO_Payment_Gateway';
@@ -675,9 +549,6 @@ function sppro_add_gateway_class($methods)
 }
 add_filter('woocommerce_payment_gateways', 'sppro_add_gateway_class');
 
-/**
- * Add payment iframe script
- */
 function sppro_add_payment_iframe_script()
 {
     if (!is_checkout()) return;
@@ -687,10 +558,6 @@ function sppro_add_payment_iframe_script()
 
     wp_enqueue_script('sppro-checkout-iframe', plugins_url('assets/js/checkout.js', __FILE__), array('jquery', 'wc-checkout'), $script_version, true);
 }
-
-/**
- * Get card image HTML
- */
 
 function sppro_get_card_image($card_key, $args = array())
 {
@@ -702,7 +569,6 @@ function sppro_get_card_image($card_key, $args = array())
     $image_path = SPPRO_PLUGIN_DIR . 'assets/images/cards/' . $card_file;
     $image_url = SPPRO_PLUGIN_URL . 'assets/images/cards/' . $card_file;
     
-    // If the specific card image doesn't exist, use default
     if (!file_exists($image_path)) {
         $image_url = SPPRO_PLUGIN_URL . 'assets/images/cards/default.png';
     }
@@ -728,15 +594,16 @@ function sppro_get_card_image($card_key, $args = array())
 
     return sprintf('<img %s>', implode(' ', $html_attributes));
 }
-/**
- * Handle AJAX request for internal API
- */
 function sppro_internal_api_request()
 {
     require_once SPPRO_PLUGIN_DIR . 'vendor/include.php';
 
     if (!check_ajax_referer('sppro_internal_api_request', 'iapi_xfvv', false)) {
-        wp_send_json('INSUFFICIENT PERMISSION');
+        wp_send_json(array('status' => 'error', 'message' => 'INVALID_NONCE'), 403);
+    }
+
+    if (!current_user_can('manage_woocommerce')) {
+        wp_send_json(array('status' => 'error', 'message' => 'INSUFFICIENT_PERMISSION'), 403);
     }
 
     try {
@@ -751,9 +618,83 @@ function sppro_internal_api_request()
     }
 }
 
-/**
- * Enqueue plugin styles
- */
+function sppro_handle_payment_callback()
+{
+    $raw_body = file_get_contents('php://input');
+    $request_data = json_decode($raw_body, true);
+
+    SPPRO_Logger::info('Callback: incoming request', array(
+        'raw_body' => $raw_body,
+        'parsed'   => $request_data,
+        'headers'  => getallheaders(),
+        'ip'       => ( isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '' ) ?: '127.0.0.1',
+    ));
+
+    if (!is_array($request_data)) {
+        SPPRO_Logger::error('Callback: invalid request body');
+        wp_send_json(array('status' => 'error', 'message' => 'Invalid request'), 400);
+    }
+
+    $order_id = isset($request_data['oid']) ? absint($request_data['oid']) : 0;
+
+    if (!$order_id) {
+        SPPRO_Logger::error('Callback: missing order id', $request_data);
+        wp_send_json(array('status' => 'error', 'message' => 'Missing order id'), 400);
+    }
+
+    $order = wc_get_order($order_id);
+    if (!$order) {
+        SPPRO_Logger::error('Callback: order not found', array('order_id' => $order_id));
+        wp_send_json(array('status' => 'error', 'message' => 'Order not found'), 404);
+    }
+
+    if ($order->is_paid()) {
+        SPPRO_Logger::info('Callback: order already paid', array('order_id' => $order_id));
+        wp_send_json(array('status' => 'success'));
+    }
+
+    $hash = isset($request_data['hash']) ? sanitize_text_field($request_data['hash']) : '';
+    if (!$hash) {
+        SPPRO_Logger::error('Callback: missing hash', array('order_id' => $order_id));
+        wp_send_json(array('status' => 'error', 'message' => 'Missing hash'), 400);
+    }
+
+    try {
+        $api = new \Eticsoft\Sanalpospro\InternalApi();
+        $data = array(
+            'process_token' => $hash,
+            'order_id' => $order_id,
+        );
+
+        SPPRO_Logger::info('Callback: calling confirmOrder', array_merge($data, array('source' => 'callback')));
+
+        $api_response = $api->run('confirmOrder', $data)->getResponse();
+
+        SPPRO_Logger::info('Callback: confirmOrder response', array(
+            'order_id' => $order_id,
+            'source'   => 'callback',
+            'response' => $api_response,
+        ));
+
+        if (isset($api_response['status']) && $api_response['status'] === 'success') {
+            SPPRO_Logger::info('Order completed via CALLBACK (server-side)', array(
+                'order_id' => $order_id,
+                'source'   => 'callback',
+                'amount'   => $api_response['data']['amount'] ?? 0,
+            ));
+            wp_send_json(array('status' => 'success'));
+        }
+
+        wp_send_json(array('status' => 'error', 'message' => $api_response['message'] ?? 'Payment validation failed'), 200);
+    } catch (\Exception $e) {
+        SPPRO_Logger::error('Callback: exception', array(
+            'order_id' => $order_id,
+            'error'    => $e->getMessage(),
+        ));
+        wp_send_json(array('status' => 'error', 'message' => $e->getMessage()), 500);
+    }
+}
+
 function sppro_enqueue_styles()
 {
     if (is_checkout()) {
@@ -761,17 +702,11 @@ function sppro_enqueue_styles()
     }
 }
 
-/**
- * Get template path
- */
 function sppro_get_template_path()
 {
     return SPPRO_PLUGIN_DIR . 'templates/';
 }
 
-/**
- * Get template
- */
 function sppro_get_template($template_name, $args = array(), $template_path = '', $default_path = '')
 {
     if (!$template_path) {

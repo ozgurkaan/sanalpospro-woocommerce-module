@@ -2,6 +2,7 @@
 // Exit if accessed directly
 if (!defined('ABSPATH')) exit;
 
+require_once dirname(__DIR__) . '/includes/class-sppro-logger.php';
 require_once __DIR__ . '/Eticsoft/Sanalpospro/InternalApi.php';
 require_once __DIR__ . '/Eticsoft/Sanalpospro/ApiResponse.php';
 require_once __DIR__ . '/Eticsoft/Sanalpospro/EticTools.php';
