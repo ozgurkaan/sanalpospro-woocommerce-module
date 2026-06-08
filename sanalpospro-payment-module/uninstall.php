@@ -33,20 +33,8 @@ $sppro_options = array(
     'woocommerce_sppro_settings',
 );
 
-foreach ( $sppro_options as $option_name ) {
-    delete_option( $option_name );
-}
-
-
-global $wpdb;
-if ( isset( $wpdb->options ) ) {
-    $wpdb->query(
-        $wpdb->prepare(
-            "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-            $wpdb->esc_like( 'SANALPOSPRO_' ) . '%',
-            $wpdb->esc_like( 'SPPRO_' ) . '%'
-        )
-    );
+foreach ( $sppro_options as $sppro_option_name ) {
+    delete_option( $sppro_option_name );
 }
 
 delete_transient( 'sanalpospro_api_token' );
@@ -85,11 +73,7 @@ function sppro_uninstall_delete_logs() {
         }
         foreach ( $files as $log_file ) {
             if ( is_file( $log_file ) ) {
-                if ( function_exists( 'wp_delete_file' ) ) {
-                    wp_delete_file( $log_file );
-                } else {
-                    unlink( $log_file );
-                }
+                wp_delete_file( $log_file );
             }
         }
     }
