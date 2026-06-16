@@ -15,7 +15,7 @@ use Eticsoft\Sanalpospro\EticConfig;
  * Plugin Name: SanalPosPRO Payment Gateway
  * Plugin URI: https://sanalpospro.com
  * Description: SanalPosPRO payment gateway for WooCommerce
- * Version: 10.1.0
+ * Version: 10.1.1
  * Requires at least: 5.8
  * Requires PHP: 7.4
  * Author: EticSoft R&D Lab.
@@ -27,7 +27,7 @@ use Eticsoft\Sanalpospro\EticConfig;
  */
 
 if (!defined('SPPRO_VERSION')) {
-    define('SPPRO_VERSION', '10.1.0');
+    define('SPPRO_VERSION', '10.1.1');
 }
 if (!defined('SPPRO_PLUGIN_URL')) {
     define('SPPRO_PLUGIN_URL', plugin_dir_url(__FILE__));
