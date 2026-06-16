@@ -374,15 +374,24 @@ function sppro_setup_gateway_class()
 
         public function receipt_page($order_id)
         {
-            if (!isset($_GET['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'sppro_payment_confirmation')) {
-                wp_die(esc_html__('Security check failed. Please try again.', 'sanalpospro-payment-module'));
-            }
             $order = wc_get_order(absint($order_id));
             if (!$order) {
                 wp_die(esc_html__('Invalid order.', 'sanalpospro-payment-module'));
             }
+   
+            $order_key = isset($_GET['key']) ? sanitize_text_field(wp_unslash($_GET['key'])) : '';
+            $valid_key = $order_key && hash_equals($order->get_order_key(), $order_key);
+            $nonce_ok = isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'sppro_payment_confirmation');
+            if (!$valid_key && !$nonce_ok) {
+                wp_die(esc_html__('Security check failed. Please try again.', 'sanalpospro-payment-module'));
+            }
             if (!current_user_can('manage_woocommerce') && $order->get_customer_id() !== get_current_user_id()) {
                 wp_die(esc_html__('You do not have permission to view this order.', 'sanalpospro-payment-module'));
+            }
+            if ($order->is_paid()) {
+                WC()->cart->empty_cart();
+                wp_safe_redirect($order->get_checkout_order_received_url());
+                exit;
             }
 
 
@@ -413,6 +422,11 @@ function sppro_setup_gateway_class()
                 
 
                 if ($response['status'] !== 'success') {
+                    if ($order->is_paid()) {
+                        WC()->cart->empty_cart();
+                        wp_safe_redirect($order->get_checkout_order_received_url());
+                        exit;
+                    }
                     $order->update_status('failed', __('Payment failed', 'sanalpospro-payment-module'));
                     wc_add_notice($response['message'], 'error');
                     wp_safe_redirect(wc_get_checkout_url());

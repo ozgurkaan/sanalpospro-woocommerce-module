@@ -414,6 +414,15 @@ class InternalApi
             home_url( '/' )
         );
 
+        $order_confirmation_url = add_query_arg(
+            array(
+                'order_id' => $order_id,
+                'key' => $order->get_order_key(),
+                '_wpnonce' => $receipt_nonce
+            ),
+            $order->get_checkout_payment_url(true)
+        );
+
         \SPPRO_Logger::info( 'CreatePaymentLink: callback URL generated', array(
             'callback_url' => $callback_url,
             'order_id'     => $order_id,
@@ -427,7 +436,7 @@ class InternalApi
         $payment->setMethod('creditcard');
         $payment->setMerchantReference($order_id);
         $payment->setCallbackUrl($callback_url);
-       /*  $payment->setReturnUrl($callback_url); */ 
+        $payment->setReturnUrl($order_confirmation_url); 
         
         $payerAddress = new Address();
         //$payerAddress->setLine1($customer->get_billing_address_1());

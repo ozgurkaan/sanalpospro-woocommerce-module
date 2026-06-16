@@ -21,7 +21,7 @@ class PaymentModel extends Entity
         ?float $buyerFee = 0.0,
         ?string $method = '',
         ?string $merchant_reference = '',
-      /*   ?string $returnUrl = '', */
+        ?string $returnUrl = '',
         ?string $callbackUrl = ''
 
     ) {
@@ -30,7 +30,7 @@ class PaymentModel extends Entity
         $this->buyerFee = $buyerFee;
         $this->method = $method;
         $this->merchant_reference = $merchant_reference;
-      /*   $this->returnUrl = $returnUrl; */
+        $this->returnUrl = $returnUrl;
         $this->callbackUrl = $callbackUrl;
     }
 
@@ -107,7 +107,7 @@ class PaymentModel extends Entity
             'buyer_fee' => $this->buyerFee,
             'method' => $this->method,
             'merchant_reference' => $this->merchant_reference,
-            /* 'return_url' => $this->returnUrl, */
+            'return_url' => $this->returnUrl,
             'callback_url' => $this->callbackUrl
         ];
     }
